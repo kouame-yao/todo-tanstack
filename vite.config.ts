@@ -16,6 +16,6 @@ const config = defineConfig({
     external: ['sequelize', 'pg', 'moment', 'moment-timezone'],
   },
 
-  plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
+  plugins: [devtools(), tailwindcss(), tanstackStart(), nitro(), viteReact()],
 })
 export default config
