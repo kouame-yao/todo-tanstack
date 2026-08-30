@@ -8,6 +8,7 @@ type SessionData = {
 export function useAppSession() {
   return useSession<SessionData>({
     // Session configuration
+
     name: 'app-session',
     password: process.env.SESSION_SECRET!, // At least 32 characters
     // Optional: customize cookie settings

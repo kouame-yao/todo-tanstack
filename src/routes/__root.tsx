@@ -1,4 +1,9 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  useRouteContext,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
@@ -6,6 +11,8 @@ import appCss from '../styles.css?url'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 import { AuthProvider } from '#/context/auth'
+import ButtonTheme from '#/components/ui/ButtonTheme'
+import { getThemeFn } from '#/utils/Theme-fn'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -28,19 +35,26 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  beforeLoad: async () => ({ theme: await getThemeFn() }),
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const [queryclient] = useState(() => new QueryClient())
+  const { theme } = useRouteContext({ from: '__root__' })
+  console.log(theme)
+
   return (
-    <html lang="fr">
+    <html lang="fr" data-theme={theme}>
       <head>
         <HeadContent />
       </head>
       <body>
         <QueryClientProvider client={queryclient}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <ButtonTheme />
+          </AuthProvider>
         </QueryClientProvider>
         <TanStackDevtools
           config={{
@@ -53,6 +67,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             },
           ]}
         />
+
         <Scripts />
       </body>
     </html>

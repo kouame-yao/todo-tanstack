@@ -9,18 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as AuthedRouteImport } from './routes/_authed'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AuthedDashboardChar123PostIdChar125RouteImport } from './routes/_authed/dashboard/{-$postId}'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
 } as any)
 const AuthedDashboardChar123PostIdChar125Route =
   AuthedDashboardChar123PostIdChar125RouteImport.update({
@@ -30,17 +35,18 @@ const AuthedDashboardChar123PostIdChar125Route =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
   '/dashboard/{-$postId}': typeof AuthedDashboardChar123PostIdChar125Route
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
   '/dashboard/{-$postId}': typeof AuthedDashboardChar123PostIdChar125Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
   '/_authed': typeof AuthedRouteWithChildren
+  '/_app/': typeof AppIndexRoute
   '/_authed/dashboard/{-$postId}': typeof AuthedDashboardChar123PostIdChar125Route
 }
 export interface FileRouteTypes {
@@ -48,21 +54,26 @@ export interface FileRouteTypes {
   fullPaths: '/' | '/dashboard/{-$postId}'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/dashboard/{-$postId}'
-  id: '__root__' | '/' | '/_authed' | '/_authed/dashboard/{-$postId}'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/_authed'
+    | '/_app/'
+    | '/_authed/dashboard/{-$postId}'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
   AuthedRoute: typeof AuthedRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed': {
@@ -71,6 +82,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthedRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_authed/dashboard/{-$postId}': {
       id: '/_authed/dashboard/{-$postId}'
@@ -81,6 +99,16 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AppRouteChildren {
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface AuthedRouteChildren {
   AuthedDashboardChar123PostIdChar125Route: typeof AuthedDashboardChar123PostIdChar125Route
@@ -95,7 +123,7 @@ const AuthedRouteWithChildren =
   AuthedRoute._addFileChildren(AuthedRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
   AuthedRoute: AuthedRouteWithChildren,
 }
 export const routeTree = rootRouteImport

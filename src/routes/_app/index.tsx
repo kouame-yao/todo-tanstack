@@ -3,7 +3,7 @@ import { Activity, useState } from 'react'
 import SignIn from '#/components/login/SignIn'
 import SignUp from '#/components/login/SignUp'
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_app/')({
   component: Login,
 })
 
