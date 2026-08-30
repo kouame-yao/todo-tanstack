@@ -29,9 +29,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sequelize": "^6.37.8",
-    "sqlite3": "^6.0.1",
-    "tailwindcss": "^4.1.18",
-    "uuid": "^14.0.2"
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@tanstack/devtools-vite": "latest",
