@@ -1,7 +1,4 @@
-import { sequelize } from '../data/config'
-import { renitialiseModel } from '../data/reset-models'
 import { PostModel, type postType } from '../models/post-model'
-import { Await, redirect } from '@tanstack/react-router'
 
 /**
  *  @description CREATION D'UNE CLASS POUR REGROUPER LES FUNCTIONS DE GESTIONS DU MODEL POST
