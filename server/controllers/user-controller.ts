@@ -41,7 +41,7 @@ class UserController {
 
       throw redirect({ to: '/dashboard/{-$postId}' })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       throw error
     }
   }

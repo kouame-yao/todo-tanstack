@@ -10,8 +10,6 @@ import { useLogout } from '#/api/hooks/user-hook'
 
 export const Route = createFileRoute('/_authed')({
   beforeLoad: async ({ location, context }) => {
-    console.log(context)
-
     const user = await getUserCurrent()
     if (!user.id) {
       throw redirect({
