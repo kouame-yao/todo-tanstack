@@ -8,7 +8,9 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "generate-routes": "tsr generate",
+    "prebuild": "prisma generate",
     "build": "vite build",
+    "postinstall": "prisma generate",
     "preview": "vite preview",
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
