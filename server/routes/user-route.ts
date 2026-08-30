@@ -20,9 +20,9 @@ export const getUserCurrent = createServerFn({ method: 'GET' }).handler(
   async () => {
     const user = await userController.getUser()
     return {
-      id: user?.toJSON().id,
-      firstName: user?.toJSON().firstName,
-      email: user?.toJSON().email,
+      id: user?.id,
+      firstName: user?.firstName,
+      email: user?.email,
     } as { id?: string; firstName: string; email: string }
   },
 )

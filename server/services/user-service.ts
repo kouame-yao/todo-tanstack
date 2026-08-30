@@ -1,3 +1,4 @@
+import { prisma } from '../../lib/prisma'
 import { UserModel, type userType } from '../models/user-model'
 
 class UserService {
@@ -7,7 +8,7 @@ class UserService {
    * @returns Utilisateur par sont email
    */
   async signIn(email: string) {
-    return UserModel.findOne({ where: { email } })
+    return await prisma.user.findFirst({ where: { email } })
   }
   /**
    * Crée l'utilisation
@@ -15,7 +16,9 @@ class UserService {
    * @returns {Promse<userType>}
    */
   async signUp(data: userType) {
-    return await UserModel.create(data)
+    return await prisma.user.create({
+      data: data,
+    })
   }
 
   /**
@@ -24,7 +27,7 @@ class UserService {
    * @returns {Promise<userType>}
    */
   async getUser(userId: string) {
-    return await UserModel.findOne({ where: { id: userId } })
+    return await prisma.user.findFirst({ where: { id: userId } })
   }
 }
 //UserModel.sync({ force: true })

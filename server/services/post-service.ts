@@ -1,4 +1,5 @@
-import { PostModel, type postType } from '../models/post-model'
+import { prisma } from '../../lib/prisma'
+import type { postType } from '../models/post-model'
 
 /**
  *  @description CREATION D'UNE CLASS POUR REGROUPER LES FUNCTIONS DE GESTIONS DU MODEL POST
@@ -13,15 +14,15 @@ class PostService {
    */
   async create(data: postType) {
     //await PostModel.sync()
-    return PostModel.create(data)
+    return await prisma.post.create({ data: data })
   }
   /**
    * Récupere la liste des posts
    * @returns La liste des posts convertire en JSON
    */
   async getAllPost(userId: string | undefined) {
-    const posts = await PostModel.findAll({ where: { userId } })
-    return posts.map((post) => post.toJSON())
+    const posts = await prisma.post.findMany({ where: { userId } })
+    return posts
   }
 
   /**
@@ -29,17 +30,11 @@ class PostService {
    * @param postId Identifiant du post
    * @returns Un post par sont Identifiant ou null si il existe pas
    */
-  async getByOne({
-    postId,
-    userId,
-  }: {
-    postId: string
-    userId: string | undefined
-  }) {
+  async getByOne({ postId, userId }: { postId: string; userId: string }) {
     if (!userId) {
       throw new Error('VEILLEZ VOUS RECONNECTEZ')
     }
-    return PostModel.findOne({ where: { id: postId, userId } })
+    return await prisma.post.findFirst({ where: { id: postId, userId } })
   }
   /**
    * Modifiée le post
@@ -47,14 +42,14 @@ class PostService {
    * @param data donnée pour modifier le post
    */
   async updatePost(postId: string, data: Partial<postType>) {
-    return PostModel.update(data, { where: { id: postId } })
+    return await prisma.post.update({ where: { id: postId }, data: data })
   }
   /**
    * Supprimée le post
    * @param postId Identifiant pour supprimer le post
    */
   async deletePost(postId: string) {
-    return PostModel.destroy({ where: { id: postId } })
+    return await prisma.post.delete({ where: { id: postId } })
   }
 }
 //renitialiseModel()

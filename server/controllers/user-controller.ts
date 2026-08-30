@@ -23,17 +23,14 @@ class UserController {
       throw new Error('EMAIL / MOT DE PASS INCORRECT')
     }
 
-    const comparePass = await bcrypt.compare(
-      password,
-      userCurrent.get().password,
-    )
+    const comparePass = await bcrypt.compare(password, userCurrent.password)
     if (!comparePass) {
       throw new Error('EMAIL / MOT DE PASS INCORRECT')
     }
     const sessions = await useAppSession()
 
     try {
-      const { password: pass, ...rest } = userCurrent.toJSON()
+      const { password: pass, ...rest } = userCurrent
       await sessions.update({
         userId: rest.id,
         email: rest.email,
@@ -60,7 +57,7 @@ class UserController {
       const SALT = 10
       const hasPass = await bcrypt.hash(password, SALT)
       const user = await this.UserService.signUp({ ...data, password: hasPass })
-      const { password: pass, ...rest } = user.toJSON()
+      const { password: pass, ...rest } = user
       return { success: true, message: 'UTILISATEUR CREE', data: rest }
     } catch (error) {
       throw error

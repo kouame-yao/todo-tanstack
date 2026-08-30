@@ -11,7 +11,7 @@ export const AddPostHanler = createServerFn({ method: 'POST' })
   .validator((data: postType) => data)
   .handler(async ({ data }) => {
     const post = await postController.create(data)
-    return post.toJSON()
+    return post
   })
 
 /**
@@ -23,7 +23,7 @@ export const GetPostHandler = createServerFn({ method: 'GET' })
   .validator((postId: string) => postId)
   .handler(async ({ data }) => {
     const post = await postController.getByone(data)
-    return post.toJSON()
+    return post
   })
 
 /**

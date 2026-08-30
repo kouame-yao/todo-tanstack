@@ -19,7 +19,7 @@ class PostController {
    */
   async create(data: postType) {
     const session = await useAppSession()
-    const userId = session.data.userId
+    const userId = session.data.userId as string
     if (!userId) {
       throw new Error('VEILLEZ VOUS RECONNECTEZ')
     }
@@ -64,7 +64,7 @@ class PostController {
    */
   async getByone(postId: string) {
     const session = await useAppSession()
-    const userId = session.data.userId
+    const userId = session.data.userId as string
     try {
       if (!postId) {
         throw new Error('Id manquant')
@@ -89,7 +89,7 @@ class PostController {
    */
   async updatePost(data: Partial<postType>, postId: string) {
     const session = await useAppSession()
-    const userId = session.data.userId
+    const userId = session.data.userId as string
     try {
       if (!postId) {
         throw new Error('Id manquant')
@@ -100,7 +100,7 @@ class PostController {
           cause: 'POST DEJA SUPPRIMER OU ERREUR DU SERVER',
         })
       }
-      const id = Existed?.get().id as string
+      const id = Existed?.id as string
       const post = await this.PostService.updatePost(id, data)
       return post
     } catch (error) {
@@ -114,7 +114,7 @@ class PostController {
    */
   async deletePost(postId: string) {
     const session = await useAppSession()
-    const userId = session.data.userId
+    const userId = session.data.userId ?? ''
 
     try {
       if (!postId) {
@@ -127,14 +127,14 @@ class PostController {
           cause: 'POST DEJA SUPPRIMER OU ERREUR DU SERVER',
         })
       }
-      const id = Existed?.get().id as string
+      const id = Existed?.id as string
 
       const post = await this.PostService.deletePost(id)
       return post
     } catch (error) {
       console.log(error)
       const Errors = error as Error
-      if (Errors.message === 'VEILLEZ VOUS RECONNECTEZ') {
+      if (Errors.message === 'VEILLEZ VOUS RECONNECTEZ ') {
         throw redirect({ to: '/' })
       }
       throw error instanceof Error
