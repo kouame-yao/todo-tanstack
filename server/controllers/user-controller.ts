@@ -3,7 +3,7 @@ import type { userType } from '../models/user-model'
 import userService from '../services/user-service'
 import bcrypt from 'bcrypt'
 import { useAppSession } from '../utils/sessions'
-import { redis } from '../lib/radis'
+//import { redis } from '../lib/radis'
 type sessionCurrentType = {
   userId: string
   idSessions: string
