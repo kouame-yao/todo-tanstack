@@ -4,7 +4,7 @@ import userController from '../controllers/user-controller'
 import { useAppSession } from '../utils/sessions'
 import { redirect } from '@tanstack/react-router'
 import { authentificationMiddleware } from '../middlewares/auth'
-import { redis } from '../lib/radis'
+//import { redis } from '../lib/radis'
 
 export const signUpApi = createServerFn({ method: 'POST' })
   .validator((data: userType) => data)
@@ -29,7 +29,7 @@ export const getUserCurrent = createServerFn({ method: 'GET' })
 
 export const logoutFn = createServerFn({ method: 'POST' }).handler(async () => {
   const session = await useAppSession()
-  await redis.del(session.id as string)
+  //await redis.del(session.id as string)
   await session.clear()
   throw redirect({ to: '/' })
 })
