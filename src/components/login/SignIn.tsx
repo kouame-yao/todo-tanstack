@@ -1,16 +1,23 @@
-import { useLocation, useNavigate } from '@tanstack/react-router'
+import {
+  useLocation,
+  useNavigate,
+  useRouteContext,
+  useRouter,
+} from '@tanstack/react-router'
 import { useCallback, useEffect, type ChangeEvent } from 'react'
 import type { userType } from '../../../server/models/user-model'
 import { useSignIn } from '#/api/hooks/user-hook'
 import Loading from '../ui/Loading'
 import Alerte from '../ui/Alerte'
+import { useAuth } from '#/context/auth'
 
 export default function SignIn({
   setToggle,
 }: {
   setToggle: (val: boolean) => void
 }) {
-  const { mutate, data, error, isPending, isSuccess, reset } = useSignIn()
+  //const { user, isLoading } = useAuth()
+  const { mutate, error, isPending } = useSignIn()
 
   const local = useLocation()
   const navigate = useNavigate()

@@ -4,7 +4,7 @@ import { sequelize } from '../data/config'
 // type du post
 export type postType = {
   id?: string
-  userId: string
+  userId?: string
   title: string
   content: string
 }

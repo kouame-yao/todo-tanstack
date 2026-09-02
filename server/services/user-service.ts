@@ -27,6 +27,7 @@ class UserService {
    * @returns {Promise<userType>}
    */
   async getUser(userId: string) {
+    console.log('UTILISAER LA BASE DE DONNER')
     return await prisma.user.findFirst({ where: { id: userId } })
   }
 }

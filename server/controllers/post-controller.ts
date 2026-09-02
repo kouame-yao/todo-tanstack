@@ -18,13 +18,10 @@ class PostController {
    * @returns Le post crée ou une erreur de type Error
    */
   async create(data: postType) {
-    const session = await useAppSession()
-    const userId = session.data.userId as string
-    if (!userId) {
-      throw new Error('VEILLEZ VOUS RECONNECTEZ')
-    }
-    const { title, content } = data
-    if (!title || !content) {
+    // const session = await useAppSession()
+    // const userId = session.data.userId as string
+    const { title, content, userId } = data
+    if (!title || !content || !userId) {
       throw new Error('Donnée attendu')
     }
     try {
@@ -43,12 +40,7 @@ class PostController {
    * Récupération des posts
    * @returns La list des posts
    */
-  async getAllPost() {
-    const session = await useAppSession()
-    const userId = session.data.userId
-    if (!userId) {
-      throw new Error('VEILLEZ VOUS CONNECTEZ')
-    }
+  async getAllPost(userId: string) {
     try {
       const post = await this.PostService.getAllPost(userId)
       return post

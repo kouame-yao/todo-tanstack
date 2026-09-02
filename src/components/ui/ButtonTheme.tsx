@@ -2,13 +2,13 @@ import { setThemeFn } from '#/utils/Theme-fn'
 import { useRouteContext, useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { Moon, Sun } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 
 export default function ButtonTheme() {
   const router = useRouter()
   const handSetTheme = useServerFn(setThemeFn)
   const { theme } = useRouteContext({ from: '__root__' })
-  console.log(theme)
+
   const ThemeToggle = useCallback(async () => {
     handSetTheme({ data: theme === 'dark' ? 'light' : 'dark' }).then(() =>
       router.invalidate(),

@@ -7,7 +7,7 @@ import Loading from '../ui/Loading'
 
 export default function TableRowBody({ post }: { post: postType[] }) {
   //HOOK DE LA SUPPRESSION DU POST
-  const { mutate, error, isPending, variables } = useDeletePost()
+  const { mutate, isPending, variables } = useDeletePost()
 
   // HOOK TANSTACK ROUTER
   const navigate = useNavigate()

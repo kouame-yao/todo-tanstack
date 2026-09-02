@@ -1,10 +1,13 @@
 import { redirect } from '@tanstack/react-router'
-import { sequelize } from '../data/config'
 import type { userType } from '../models/user-model'
 import userService from '../services/user-service'
 import bcrypt from 'bcrypt'
 import { useAppSession } from '../utils/sessions'
-
+import { redis } from '../lib/radis'
+type sessionCurrentType = {
+  userId: string
+  idSessions: string
+}
 type UserService = typeof userService
 class UserController {
   constructor(private UserService: UserService) {}
@@ -35,7 +38,6 @@ class UserController {
         userId: rest.id,
         email: rest.email,
       })
-
       throw redirect({ to: '/dashboard/{-$postId}' })
     } catch (error) {
       //console.log(error)
@@ -64,16 +66,21 @@ class UserController {
     }
   }
 
-  async getUser() {
-    const sessions = await useAppSession()
-
-    // Vérifier si c'est une nouvelle session vide
-    if (sessions.data.userId === undefined || sessions.data.userId === null) {
-      await sessions.clear()
-      return null
+  async getUser({ userId, idSessions }: sessionCurrentType) {
+    // Vérifier si c'est une nouvelle session vi
+    if (!idSessions) {
+      throw new Error('Une erreur est surevenur')
     }
-
-    return await this.UserService.getUser(sessions.data.userId)
+    const UserCache = await redis.get(idSessions)
+    if (UserCache) {
+      console.log('UTLISER LE CACHE REDIS')
+      return JSON.parse(UserCache) as userType
+    }
+    const user = (await this.UserService.getUser(userId)) as userType
+    const { password, ...rest } = user
+    await redis.set(idSessions, JSON.stringify(rest))
+    console.log('UTLISER LA BASE DE DONNER POUR ID SESSIONS')
+    return rest
   }
 }
 

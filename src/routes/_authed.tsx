@@ -9,9 +9,9 @@ import { getUserCurrent } from '../../server/routes/user-route'
 import { useLogout } from '#/api/hooks/user-hook'
 
 export const Route = createFileRoute('/_authed')({
-  beforeLoad: async ({ location, context }) => {
+  beforeLoad: async ({ location }) => {
     const user = await getUserCurrent()
-    if (!user.id) {
+    if (user?.id === undefined) {
       throw redirect({
         to: '/',
         search: { redirect: location.href },

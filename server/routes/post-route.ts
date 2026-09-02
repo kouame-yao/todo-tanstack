@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import type { postType } from '../models/post-model'
 import postController from '../controllers/post-controller'
+import { authentificationMiddleware } from '../middlewares/auth'
 
 /**
  * Function server pour crée un post
@@ -9,8 +10,12 @@ import postController from '../controllers/post-controller'
  */
 export const AddPostHanler = createServerFn({ method: 'POST' })
   .validator((data: postType) => data)
-  .handler(async ({ data }) => {
-    const post = await postController.create(data)
+  .middleware([authentificationMiddleware])
+  .handler(async ({ data, context }) => {
+    const post = await postController.create({
+      ...data,
+      userId: context.userId,
+    })
     return post
   })
 
@@ -21,6 +26,7 @@ export const AddPostHanler = createServerFn({ method: 'POST' })
  */
 export const GetPostHandler = createServerFn({ method: 'GET' })
   .validator((postId: string) => postId)
+  .middleware([authentificationMiddleware])
   .handler(async ({ data }) => {
     const post = await postController.getByone(data)
     return post
@@ -30,12 +36,12 @@ export const GetPostHandler = createServerFn({ method: 'GET' })
  * Function server recupérée la list des posts
  * @returns {Promise<postType>} Le post trouver ou null si il existe pas
  */
-export const GetPostAllHandler = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const post = await postController.getAllPost()
+export const GetPostAllHandler = createServerFn({ method: 'GET' })
+  .middleware([authentificationMiddleware])
+  .handler(async ({ context }) => {
+    const post = await postController.getAllPost(context.userId)
     return post
-  },
-)
+  })
 /**
  * Function server modifiée un post par sont identifiant
  * @param {Partial<postType>} data - Donnée pour modifiée le post
@@ -43,6 +49,7 @@ export const GetPostAllHandler = createServerFn({ method: 'GET' }).handler(
  */
 export const UpdatePostHandler = createServerFn({ method: 'POST' })
   .validator((data: { post: Partial<postType>; postId: string }) => data)
+  .middleware([authentificationMiddleware])
   .handler(async ({ data }) => {
     await postController.updatePost(data.post, data.postId)
     return data.post
@@ -55,6 +62,7 @@ export const UpdatePostHandler = createServerFn({ method: 'POST' })
  */
 export const DeletePostHandler = createServerFn({ method: 'POST' })
   .validator((postId: string) => postId)
+  .middleware([authentificationMiddleware])
   .handler(async ({ data }) => {
     await postController.deletePost(data)
     return {

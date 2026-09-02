@@ -8,15 +8,17 @@ import {
   UpdatePostHandler,
 } from '../../../server/routes/post-route'
 import type { postType } from '../../../server/models/post-model'
+import { toast } from 'sonner'
 // INITIALISATION DES CLEE DE POST
 const postsListKey = ['posts', 'list'] as const
 
-// HOOK POUR CREE UN POST
+// HOOK POUR RECUPERE TOUT LES POSTS
 export const usePosts = () => {
   const posts = useServerFn(GetPostAllHandler)
   return useQuery({
     queryKey: postsListKey,
     queryFn: async () => await posts(),
+    refetchOnWindowFocus: false,
   })
 }
 
@@ -38,6 +40,10 @@ export const useCreatePost = () => {
     mutationFn: async (data: postType) => await create({ data: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: postsListKey })
+      toast.success('Post ajouter')
+    },
+    onError(error) {
+      toast.error(error.message)
     },
   })
 }
@@ -55,8 +61,11 @@ export const useEditPost = (
       await create({ data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: postsListKey })
-
       onSuccess?.()
+      toast.success('post modifier')
+    },
+    onError(error) {
+      toast.error(error.message)
     },
   })
 }
@@ -67,8 +76,12 @@ export const useDeletePost = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (postId: string) => await create({ data: postId }),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: postsListKey })
+      toast.warning('post supprimer' + data.message)
+    },
+    onError(error) {
+      toast.error(error.message)
     },
   })
 }

@@ -34,7 +34,6 @@ export default function SignUp({
     mutate(value, {
       onSuccess: () => form?.reset(),
     })
-    console.log(data)
   }
   return (
     <form onSubmit={handleCreate}>

@@ -23,11 +23,6 @@ export default function HeaderList() {
 
   return (
     <div className="border sm:w-150 rounded-box p-4 ">
-      {error && (
-        <div className="alert alert-error">
-          <div className="">{error.message}</div>
-        </div>
-      )}
       <form onSubmit={pushPost} action="" className="flex gap-2 w-full">
         <label htmlFor="" className="col-span-">
           Title

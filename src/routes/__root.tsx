@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { Toaster } from 'sonner'
 
 import appCss from '../styles.css?url'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -42,7 +43,6 @@ export const Route = createRootRoute({
 function RootDocument({ children }: { children: React.ReactNode }) {
   const [queryclient] = useState(() => new QueryClient())
   const { theme } = useRouteContext({ from: '__root__' })
-  console.log(theme)
 
   return (
     <html lang="fr" data-theme={theme}>
@@ -51,10 +51,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryclient}>
-          <AuthProvider>
-            {children}
-            <ButtonTheme />
-          </AuthProvider>
+          <Toaster />
+          {children}
+          <ButtonTheme />
         </QueryClientProvider>
         <TanStackDevtools
           config={{
