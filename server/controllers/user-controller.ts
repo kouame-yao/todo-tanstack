@@ -87,17 +87,24 @@ class UserController {
     // console.log('UTLISER LA BASE DE DONNER POUR ID SESSIONS')
     return rest as Partial<userType>
   }
-
   async updateUserRole(userId: string, data: roleType, userSessionId: string) {
     if (!data) {
-      throw new Error('Tout les champs sont requit')
+      throw new Error('Tous les champs sont requis')
     }
-    // const { password, ...rest } = user
-    // await redis.set(userSessionId, JSON.stringify())
-    const user = await this.UserService.updateUserRole(userId, data)
 
-    const { password, ...rest } = user
-    await redis.set(userSessionId, JSON.stringify(rest))
+    const user = await this.UserService.updateUserRole(userId, data)
+    const { password, ...userWithoutPassword } = user
+
+    // Format attendu par Spring Session
+    const sessionKey = userSessionId
+
+    // Mettre à jour UNIQUEMENT l'attribut utilisateur
+    await redis.hset(sessionKey, JSON.stringify(userWithoutPassword))
+
+    // Le TTL est automatiquement géré par Spring Session
+    // Mais on peut le rafraîchir si nécessaire
+    await redis.expire(sessionKey, 1800)
+
     return user
   }
 }
