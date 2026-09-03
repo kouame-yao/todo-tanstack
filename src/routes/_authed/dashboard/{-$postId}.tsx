@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_authed/dashboard/{-$postId}')({
 
 function Dashboard() {
   return (
-    <div className="flex flex-col justify-center items-center h-screen sm:w-full gap-4">
+    <div className="flex flex-col justify-center items-center h-screen sm:w-full gap-4 px-4 sm:px-0">
       <HeaderList />
       <TableListe />
       <DialogModal />

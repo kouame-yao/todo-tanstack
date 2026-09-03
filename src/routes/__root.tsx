@@ -51,22 +51,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryclient}>
-          <Toaster />
-          {children}
-          <ButtonTheme />
+          <AuthProvider>
+            <Toaster />
+            {children}
+            <ButtonTheme />
+          </AuthProvider>
         </QueryClientProvider>
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
-
         <Scripts />
       </body>
     </html>

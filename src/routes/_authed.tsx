@@ -6,7 +6,10 @@ import {
 } from '@tanstack/react-router'
 import { getUserCurrent } from '../../server/routes/user-route'
 
-import { useLogout } from '#/api/hooks/user-hook'
+import { useLogout, useUpdateRole } from '#/api/hooks/user-hook'
+import { AuthProvider, useAuth } from '#/context/auth'
+import { Suspense } from 'react'
+import Loading from '#/components/ui/Loading'
 
 export const Route = createFileRoute('/_authed')({
   beforeLoad: async ({ location }) => {
@@ -25,20 +28,38 @@ export const Route = createFileRoute('/_authed')({
 
 function Authed() {
   const { mutate } = useLogout()
-  const { user } = useRouteContext({ from: '/_authed' })
-
+  const { user, refetch, isLoading } = useAuth()
+  const { mutate: updateRole } = useUpdateRole()
   return (
-    <div>
-      <div className="m-4">
-        <button onClick={() => mutate()} className="btn btn-error">
-          Deconnexion
-        </button>
+    <div className="m-4">
+      <button
+        onClick={() => mutate()}
+        className="btn btn-error text-error-content "
+      >
+        Deconnexion
+      </button>
+      {isLoading ? (
+        <Loading />
+      ) : (
         <div className="mt-2">
           <h1>UTILISATEUR</h1>
-          <p>FirstName: {user.firstName} </p>
-          <p>Email: {user.email} </p>
+          <p>FirstName: {user?.firstName} </p>
+          <p>Email: {user?.email} </p>
+          <p>
+            Role:{' '}
+            <button
+              onClick={() =>
+                updateRole(user?.role === 'USER' ? 'ADMIN' : 'USER', {
+                  onSuccess: () => refetch(),
+                })
+              }
+              className="btn btn-neutral"
+            >
+              {user?.role}
+            </button>{' '}
+          </p>
         </div>
-      </div>
+      )}
       <Outlet />
     </div>
   )

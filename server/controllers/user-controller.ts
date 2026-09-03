@@ -1,5 +1,5 @@
 import { redirect } from '@tanstack/react-router'
-import type { userType } from '../models/user-model'
+import type { roleType, userType } from '../models/user-model'
 import userService from '../services/user-service'
 import bcrypt from 'bcrypt'
 import { useAppSession } from '../utils/sessions'
@@ -37,6 +37,7 @@ class UserController {
       await sessions.update({
         userId: rest.id,
         email: rest.email,
+        role: rest.role ?? 'USER',
       })
       throw redirect({ to: '/dashboard/{-$postId}' })
     } catch (error) {
@@ -65,7 +66,11 @@ class UserController {
       throw error
     }
   }
-
+  /**
+   *
+   * @param userId - donnée pour récuperé l'utilisateur connecter
+   * @returns {Promise<userType>}
+   */
   async getUser({ userId, idSessions }: sessionCurrentType) {
     // Vérifier si c'est une nouvelle session vi
     // if (!idSessions) {
@@ -80,7 +85,14 @@ class UserController {
     const { password, ...rest } = user
     // await redis.set(idSessions, JSON.stringify(rest))
     // console.log('UTLISER LA BASE DE DONNER POUR ID SESSIONS')
-    return rest
+    return rest as Partial<userType>
+  }
+
+  async updateUserRole(userId: string, data: roleType) {
+    if (!data) {
+      throw new Error('Tout les champs sont requit')
+    }
+    return await this.UserService.updateUserRole(userId, data)
   }
 }
 

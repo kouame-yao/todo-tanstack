@@ -2,9 +2,11 @@ import { DataTypes, type ModelDefined } from 'sequelize'
 import { sequelize } from '../data/config'
 
 // type du post
+export type roleType = 'ADMIN' | 'USER'
 export type userType = {
   id?: string
   firstName: string
+  role: roleType
   email: string
   password: string
 }

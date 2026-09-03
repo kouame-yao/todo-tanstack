@@ -1,5 +1,5 @@
 import { prisma } from '../../lib/prisma'
-import { UserModel, type userType } from '../models/user-model'
+import { UserModel, type roleType, type userType } from '../models/user-model'
 
 class UserService {
   /**
@@ -27,8 +27,15 @@ class UserService {
    * @returns {Promise<userType>}
    */
   async getUser(userId: string) {
-    console.log('UTILISAER LA BASE DE DONNER')
     return await prisma.user.findFirst({ where: { id: userId } })
+  }
+  async updateUserRole(userId: string, role: roleType) {
+    return await prisma.user.update({
+      where: { id: userId },
+      data: {
+        role,
+      },
+    })
   }
 }
 //UserModel.sync({ force: true })

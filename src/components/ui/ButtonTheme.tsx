@@ -15,7 +15,7 @@ export default function ButtonTheme() {
     )
   }, [theme])
   return (
-    <div className="absolute overflow-hidden right-4 bottom-4 ">
+    <div className="absolute overflow-hidden right-4 top-4  ">
       <button
         onClick={ThemeToggle}
         className="btn btn-circle bg-white text-black "

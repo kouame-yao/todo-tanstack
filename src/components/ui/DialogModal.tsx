@@ -31,7 +31,9 @@ export default function DialogModal() {
   )
 
   // HOOK POUR RECUPERER UN POST PAR SONT ID
-  const { data: post } = usePost(postId?.toString() ?? '')
+  const { data: post, isLoading: loadinPost } = usePost(
+    postId?.toString() as string,
+  )
 
   // UTILISATION DU HOOK USEEFFECT POUR RECUPEREE LES VALEURS PAR DEFAUT DANS L'INPUT
   useEffect(() => {
@@ -74,7 +76,7 @@ export default function DialogModal() {
   }, [navigate, postId])
 
   // GESTION DU CHARGEMENT
-  if (isPending) {
+  if (loadinPost) {
     return (
       <dialog id="my_modal_1" className="modal modal-open">
         <div className="modal-box flex justify-center items-center min-h-[200px]">

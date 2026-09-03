@@ -15,8 +15,8 @@ export default function () {
       {isPending ? (
         <div className="loading loading-spinner loading-xl"></div>
       ) : (
-        <div className="overflow-x-auto card border  sm:w-150  ">
-          <table className="table sm:table-lg">
+        <div className="overflow-x-auto card w-full border  sm:w-150  ">
+          <table className="table  sm:table-lg">
             {/* head */}
             <thead>
               <tr>

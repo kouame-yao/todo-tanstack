@@ -1,7 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import type { postType } from '../models/post-model'
 import postController from '../controllers/post-controller'
-import { authentificationMiddleware } from '../middlewares/auth'
+import {
+  authentificationMiddleware,
+  authorizationRole,
+} from '../middlewares/auth'
 
 /**
  * Function server pour crée un post
@@ -62,7 +65,7 @@ export const UpdatePostHandler = createServerFn({ method: 'POST' })
  */
 export const DeletePostHandler = createServerFn({ method: 'POST' })
   .validator((postId: string) => postId)
-  .middleware([authentificationMiddleware])
+  .middleware([authentificationMiddleware, authorizationRole])
   .handler(async ({ data }) => {
     await postController.deletePost(data)
     return {

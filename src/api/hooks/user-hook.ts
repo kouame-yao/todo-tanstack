@@ -3,9 +3,10 @@ import {
   logoutFn,
   signInApi,
   signUpApi,
+  updateUserRoleFn,
 } from '../../../server/routes/user-route'
 import { useMutation } from '@tanstack/react-query'
-import type { userType } from '../../../server/models/user-model'
+import type { roleType, userType } from '../../../server/models/user-model'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 // HOOK POUR CREER UN COMPTE UTLISATEUR
@@ -27,6 +28,19 @@ export const useSignIn = () => {
       toast.message('VOUS ETES CONNECTEZ')
     },
     onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useUpdateRole = () => {
+  const updateRole = useServerFn(updateUserRoleFn)
+  return useMutation({
+    mutationFn: async (data: roleType) => await updateRole({ data: data }),
+    onSuccess: () => {
+      toast.success('UTILISATEUR MODIFIER')
+    },
+    onError(error) {
       toast.error(error.message)
     },
   })
