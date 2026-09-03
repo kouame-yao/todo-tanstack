@@ -3,7 +3,7 @@ import type { roleType, userType } from '../models/user-model'
 import userService from '../services/user-service'
 import bcrypt from 'bcrypt'
 import { useAppSession } from '../utils/sessions'
-//import { redis } from '../lib/radis'
+import { redis } from '../lib/radis'
 type sessionCurrentType = {
   userId: string
   idSessions: string
@@ -72,18 +72,18 @@ class UserController {
    * @returns {Promise<userType>}
    */
   async getUser({ userId, idSessions }: sessionCurrentType) {
-    // Vérifier si c'est une nouvelle session vi
-    // if (!idSessions) {
-    //   throw new Error('Une erreur est surevenur')
-    // }
-    // const UserCache = await redis.get(idSessions)
-    // if (UserCache) {
-    //   console.log('UTLISER LE CACHE REDIS')
-    //   return JSON.parse(UserCache) as userType
-    // }
+    //Vérifier si c'est une nouvelle session vi
+    if (!idSessions) {
+      throw new Error('Une erreur est surevenur')
+    }
+    const UserCache = await redis.get(idSessions)
+    if (UserCache) {
+      console.log('UTLISER LE CACHE REDIS')
+      return JSON.parse(UserCache) as userType
+    }
     const user = (await this.UserService.getUser(userId)) as userType
     const { password, ...rest } = user
-    // await redis.set(idSessions, JSON.stringify(rest))
+    await redis.set(idSessions, JSON.stringify(rest))
     // console.log('UTLISER LA BASE DE DONNER POUR ID SESSIONS')
     return rest as Partial<userType>
   }
