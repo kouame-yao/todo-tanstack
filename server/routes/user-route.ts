@@ -33,7 +33,11 @@ export const updateUserRoleFn = createServerFn({ method: 'POST' })
   .validator((data: roleType) => data)
   .middleware([authentificationMiddleware])
   .handler(async ({ data, context }) => {
-    return await userController.updateUserRole(context.userId, data)
+    return await userController.updateUserRole(
+      context.userId,
+      data,
+      context.sessionsId,
+    )
   })
 
 export const logoutFn = createServerFn({ method: 'POST' }).handler(async () => {

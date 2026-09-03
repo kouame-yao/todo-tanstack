@@ -88,11 +88,17 @@ class UserController {
     return rest as Partial<userType>
   }
 
-  async updateUserRole(userId: string, data: roleType) {
+  async updateUserRole(userId: string, data: roleType, userSessionId: string) {
     if (!data) {
       throw new Error('Tout les champs sont requit')
     }
-    return await this.UserService.updateUserRole(userId, data)
+    // const { password, ...rest } = user
+    // await redis.set(userSessionId, JSON.stringify())
+    const user = await this.UserService.updateUserRole(userId, data)
+
+    const { password, ...rest } = user
+    await redis.set(userSessionId, JSON.stringify(rest))
+    return user
   }
 }
 
