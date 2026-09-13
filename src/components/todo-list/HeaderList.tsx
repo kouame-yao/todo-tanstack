@@ -1,6 +1,6 @@
 import { useCallback, type ChangeEvent } from 'react'
 import type { postType } from '../../../server/models/post-model'
-import { useCreatePost } from '#/api/hooks/post-hook'
+import { useCreatePost } from '#/hooks/post-hook'
 import Loading from '../ui/Loading'
 
 export default function HeaderList() {
@@ -16,6 +16,7 @@ export default function HeaderList() {
       title: dataForm.get('title')!.toString(),
       content: dataForm.get('content')!.toString(),
     }
+
     mutate(value, {
       onSuccess: () => form.reset(),
     })

@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-router'
 import { useCallback, useEffect, type ChangeEvent } from 'react'
 import type { userType } from '../../../server/models/user-model'
-import { useSignIn } from '#/api/hooks/user-hook'
+import { useSignIn } from '#/hooks/user-hook'
 import Loading from '../ui/Loading'
 import Alerte from '../ui/Alerte'
 import { useAuth } from '#/context/auth'

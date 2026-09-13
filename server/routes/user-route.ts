@@ -5,7 +5,6 @@ import { useAppSession } from '../utils/sessions'
 import { redirect } from '@tanstack/react-router'
 import { authentificationMiddleware } from '../middlewares/auth'
 import { rateLimiteMiddleware } from '../middlewares/secu'
-import { redis } from '../lib/radis'
 
 export const signUpApi = createServerFn({ method: 'POST' })
   .validator((data: userType) => data)
@@ -25,7 +24,6 @@ export const getUserCurrent = createServerFn({ method: 'GET' })
   .handler(async ({ context }) => {
     return await userController.getUser({
       userId: context.userId,
-      idSessions: context.sessionsId,
     })
   })
 
@@ -33,16 +31,11 @@ export const updateUserRoleFn = createServerFn({ method: 'POST' })
   .validator((data: roleType) => data)
   .middleware([authentificationMiddleware])
   .handler(async ({ data, context }) => {
-    return await userController.updateUserRole(
-      context.userId,
-      data,
-      context.sessionsId,
-    )
+    return await userController.updateUserRole(context.userId as string, data)
   })
 
 export const logoutFn = createServerFn({ method: 'POST' }).handler(async () => {
   const session = await useAppSession()
-  await redis.del(session.id as string)
   await session.clear()
   throw redirect({ to: '/' })
 })

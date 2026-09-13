@@ -54,7 +54,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <AuthProvider>
             <Toaster />
             {children}
-            <ButtonTheme />
+            <ButtonTheme thm={theme} />
           </AuthProvider>
         </QueryClientProvider>
         <Scripts />

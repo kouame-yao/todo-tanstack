@@ -1,7 +1,7 @@
 import { Pen, Trash2 } from 'lucide-react'
 import type { postType } from '../../../server/models/post-model'
 import { useNavigate } from '@tanstack/react-router'
-import { useDeletePost } from '#/api/hooks/post-hook'
+import { useDeletePost } from '#/hooks/post-hook'
 import { useCallback } from 'react'
 import Loading from '../ui/Loading'
 

@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import type { ChangeEvent } from 'react'
 import type { userType } from '../../../server/models/user-model'
-import { useSignUp } from '#/api/hooks/user-hook'
+import { useSignUp } from '#/hooks/user-hook'
 import Alerte from '../ui/Alerte'
 import Loading from '../ui/Loading'
 

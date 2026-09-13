@@ -13,6 +13,8 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AuthedDashboardChar123PostIdChar125RouteImport } from './routes/_authed/dashboard/{-$postId}'
+import { Route as ApiV1PostRouteRouteImport } from './routes/api/v1/post/route'
+import { Route as ApiV1PostPostIdRouteImport } from './routes/api/v1/post/$postId'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -33,38 +35,58 @@ const AuthedDashboardChar123PostIdChar125Route =
     path: '/dashboard/{-$postId}',
     getParentRoute: () => AuthedRoute,
   } as any)
+const ApiV1PostRouteRoute = ApiV1PostRouteRouteImport.update({
+  id: '/api/v1/post',
+  path: '/api/v1/post',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1PostPostIdRoute = ApiV1PostPostIdRouteImport.update({
+  id: '/$postId',
+  path: '/$postId',
+  getParentRoute: () => ApiV1PostRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
+  '/api/v1/post': typeof ApiV1PostRouteRouteWithChildren
   '/dashboard/{-$postId}': typeof AuthedDashboardChar123PostIdChar125Route
+  '/api/v1/post/$postId': typeof ApiV1PostPostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
+  '/api/v1/post': typeof ApiV1PostRouteRouteWithChildren
   '/dashboard/{-$postId}': typeof AuthedDashboardChar123PostIdChar125Route
+  '/api/v1/post/$postId': typeof ApiV1PostPostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/_authed': typeof AuthedRouteWithChildren
   '/_app/': typeof AppIndexRoute
+  '/api/v1/post': typeof ApiV1PostRouteRouteWithChildren
   '/_authed/dashboard/{-$postId}': typeof AuthedDashboardChar123PostIdChar125Route
+  '/api/v1/post/$postId': typeof ApiV1PostPostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard/{-$postId}'
+  fullPaths:
+    '/' | '/api/v1/post' | '/dashboard/{-$postId}' | '/api/v1/post/$postId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard/{-$postId}'
+  to: '/' | '/api/v1/post' | '/dashboard/{-$postId}' | '/api/v1/post/$postId'
   id:
     | '__root__'
     | '/_app'
     | '/_authed'
     | '/_app/'
+    | '/api/v1/post'
     | '/_authed/dashboard/{-$postId}'
+    | '/api/v1/post/$postId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AuthedRoute: typeof AuthedRouteWithChildren
+  ApiV1PostRouteRoute: typeof ApiV1PostRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -97,6 +119,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedDashboardChar123PostIdChar125RouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/api/v1/post': {
+      id: '/api/v1/post'
+      path: '/api/v1/post'
+      fullPath: '/api/v1/post'
+      preLoaderRoute: typeof ApiV1PostRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/post/$postId': {
+      id: '/api/v1/post/$postId'
+      path: '/$postId'
+      fullPath: '/api/v1/post/$postId'
+      preLoaderRoute: typeof ApiV1PostPostIdRouteImport
+      parentRoute: typeof ApiV1PostRouteRoute
+    }
   }
 }
 
@@ -122,19 +158,33 @@ const AuthedRouteChildren: AuthedRouteChildren = {
 const AuthedRouteWithChildren =
   AuthedRoute._addFileChildren(AuthedRouteChildren)
 
+interface ApiV1PostRouteRouteChildren {
+  ApiV1PostPostIdRoute: typeof ApiV1PostPostIdRoute
+}
+
+const ApiV1PostRouteRouteChildren: ApiV1PostRouteRouteChildren = {
+  ApiV1PostPostIdRoute: ApiV1PostPostIdRoute,
+}
+
+const ApiV1PostRouteRouteWithChildren = ApiV1PostRouteRoute._addFileChildren(
+  ApiV1PostRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AuthedRoute: AuthedRouteWithChildren,
+  ApiV1PostRouteRoute: ApiV1PostRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

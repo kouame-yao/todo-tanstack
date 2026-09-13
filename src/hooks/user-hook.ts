@@ -4,9 +4,9 @@ import {
   signInApi,
   signUpApi,
   updateUserRoleFn,
-} from '../../../server/routes/user-route'
+} from '../../server/routes/user-route'
 import { useMutation } from '@tanstack/react-query'
-import type { roleType, userType } from '../../../server/models/user-model'
+import type { roleType, userType } from '../../server/models/user-model'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 // HOOK POUR CREER UN COMPTE UTLISATEUR

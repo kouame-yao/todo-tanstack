@@ -17,23 +17,28 @@ class PostController {
    * @param data donnée attendu pour crée le post
    * @returns Le post crée ou une erreur de type Error
    */
-  async create(data: postType) {
+  async create(req: Request, userId: string) {
     // const session = await useAppSession()
     // const userId = session.data.userId as string
-    const { title, content, userId } = data
-    if (!title || !content || !userId) {
+    const data = (await req.json()) as postType
+    if (!data.title || !data.content || !userId) {
       throw new Error('Donnée attendu')
     }
     try {
-      const post = await this.PostService.create({
-        title,
-        content,
+      await this.PostService.create({
+        title: data.title,
+        content: data.content,
         userId,
       })
-      return post
+      return new Response(
+        JSON.stringify({ message: `POSTE AJOUTER AVEC SUCCES`, data }),
+        {
+          status: 200,
+        },
+      )
     } catch (error) {
       console.error(error)
-      throw error
+      return new Response('ERREUR SERVER ' + error, { status: 500 })
     }
   }
   /**
@@ -43,10 +48,12 @@ class PostController {
   async getAllPost(userId: string) {
     try {
       const post = await this.PostService.getAllPost(userId)
-      return post
+      return new Response(JSON.stringify(post), {
+        status: 200,
+      })
     } catch (error) {
       console.log(error)
-      throw error
+      return new Response('ERREUR SERVER ' + error, { status: 500 })
     }
   }
   /**
@@ -54,9 +61,7 @@ class PostController {
    * @param postId Identifiant pour recupéer un post
    * @returns Le post ou null si il existe pas
    */
-  async getByone(postId: string) {
-    const session = await useAppSession()
-    const userId = session.data.userId as string
+  async getByone(postId: string, userId: string) {
     try {
       if (!postId) {
         throw new Error('Id manquant')
@@ -68,10 +73,12 @@ class PostController {
           cause: 'POST DEJA SUPPRIMER OU ERREUR DU SERVER',
         })
       }
-      return post
+      return new Response(JSON.stringify(post), {
+        status: 200,
+      })
     } catch (error) {
       console.log(error)
-      throw error
+      return new Response('ERREUR SERVER ' + error, { status: 500 })
     }
   }
   /**
@@ -79,9 +86,8 @@ class PostController {
    * @param data Donnée attendu pour modifiée le post
    * @param postId Identifiant pour modifiée un post
    */
-  async updatePost(data: Partial<postType>, postId: string) {
-    const session = await useAppSession()
-    const userId = session.data.userId as string
+  async updatePost(req: Request, postId: string, userId: string) {
+    const data = (await req.json()) as Partial<postType>
     try {
       if (!postId) {
         throw new Error('Id manquant')
@@ -93,21 +99,23 @@ class PostController {
         })
       }
       const id = Existed?.id as string
-      const post = await this.PostService.updatePost(id, data)
-      return post
+      await this.PostService.updatePost(id, data)
+      return new Response(
+        JSON.stringify({ message: 'POSTE MODIFIER AVEC SUCCES' }),
+        {
+          status: 200,
+        },
+      )
     } catch (error) {
       console.log(error)
-      throw error
+      return new Response('ERREUR SERVER ' + error, { status: 500 })
     }
   }
   /**
    * Supprimer le post grâce à son identifiant
    * @param postId Identifiant pour supprimée le post
    */
-  async deletePost(postId: string) {
-    const session = await useAppSession()
-    const userId = session.data.userId ?? ''
-
+  async deletePost(postId: string, userId: string) {
     try {
       if (!postId) {
         throw new Error('Id manquant')
@@ -121,15 +129,16 @@ class PostController {
       }
       const id = Existed?.id as string
 
-      const post = await this.PostService.deletePost(id)
-      return post
+      await this.PostService.deletePost(id)
+      return new Response(
+        JSON.stringify({ message: 'POST SUPPRIMER AVEC SUCCES' }),
+        {
+          status: 200,
+        },
+      )
     } catch (error) {
       console.log(error)
-      const Errors = error as Error
-      if (Errors.message === 'VEILLEZ VOUS RECONNECTEZ ') {
-        throw redirect({ to: '/' })
-      }
-      throw error instanceof Error
+      return new Response('ERREUR SERVER ' + error, { status: 500 })
     }
   }
 }

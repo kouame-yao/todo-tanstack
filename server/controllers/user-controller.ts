@@ -3,10 +3,10 @@ import type { roleType, userType } from '../models/user-model'
 import userService from '../services/user-service'
 import bcrypt from 'bcrypt'
 import { useAppSession } from '../utils/sessions'
-import { redis } from '../lib/radis'
+import { generateToken } from '../utils/generateToken'
+import { setCookie } from '@tanstack/react-start/server'
 type sessionCurrentType = {
-  userId: string
-  idSessions: string
+  userId?: string
 }
 type UserService = typeof userService
 class UserController {
@@ -38,6 +38,15 @@ class UserController {
         userId: rest.id,
         email: rest.email,
         role: rest.role ?? 'USER',
+      })
+      const { refreshToken } = generateToken({
+        userId: rest.id,
+        email: rest.email,
+        role: rest.role ?? 'USER',
+      })
+      setCookie('refresh', refreshToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60,
       })
       throw redirect({ to: '/dashboard/{-$postId}' })
     } catch (error) {
@@ -71,39 +80,18 @@ class UserController {
    * @param userId - donnée pour récuperé l'utilisateur connecter
    * @returns {Promise<userType>}
    */
-  async getUser({ userId, idSessions }: sessionCurrentType) {
-    //Vérifier si c'est une nouvelle session vi
-    if (!idSessions) {
-      throw new Error('Une erreur est surevenur')
-    }
-    const UserCache = await redis.get(idSessions)
-    if (UserCache) {
-      console.log('UTLISER LE CACHE REDIS')
-      return JSON.parse(UserCache) as userType
-    }
-    const user = (await this.UserService.getUser(userId)) as userType
+  async getUser({ userId }: sessionCurrentType) {
+    const user = (await this.UserService.getUser(userId as string)) as userType
     const { password, ...rest } = user
-    await redis.set(idSessions, JSON.stringify(rest))
-    // console.log('UTLISER LA BASE DE DONNER POUR ID SESSIONS')
     return rest as Partial<userType>
   }
-  async updateUserRole(userId: string, data: roleType, userSessionId: string) {
+  async updateUserRole(userId: string, data: roleType) {
     if (!data) {
       throw new Error('Tous les champs sont requis')
     }
 
     const user = await this.UserService.updateUserRole(userId, data)
     const { password, ...userWithoutPassword } = user
-
-    // Format attendu par Spring Session
-    const sessionKey = userSessionId
-
-    // Mettre à jour UNIQUEMENT l'attribut utilisateur
-    await redis.hset(sessionKey, JSON.stringify(userWithoutPassword))
-
-    // Le TTL est automatiquement géré par Spring Session
-    // Mais on peut le rafraîchir si nécessaire
-    await redis.expire(sessionKey, 1800)
 
     return user
   }

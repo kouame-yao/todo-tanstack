@@ -1,46 +1,44 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useServerFn } from '@tanstack/react-start'
-import {
-  AddPostHanler,
-  DeletePostHandler,
-  GetPostAllHandler,
-  GetPostHandler,
-  UpdatePostHandler,
-} from '../../../server/routes/post-route'
-import type { postType } from '../../../server/models/post-model'
+import type { postType } from '../../server/models/post-model'
 import { toast } from 'sonner'
+import { ApiFetch } from '#/utils/Fecth-fn'
 // INITIALISATION DES CLEE DE POST
 const postsListKey = ['posts', 'list'] as const
 
 // HOOK POUR RECUPERE TOUT LES POSTS
 export const usePosts = () => {
-  const posts = useServerFn(GetPostAllHandler)
   return useQuery({
     queryKey: postsListKey,
-    queryFn: async () => await posts(),
+    queryFn: async () =>
+      await ApiFetch('http://localhost:3000/api/v1/post', { method: 'GET' }),
     refetchOnWindowFocus: false,
   })
 }
 
 // HOOK POUR RECUPEREE UN POST PAR SON IDENTIFIANT
 export const usePost = (postId: string) => {
-  const post = useServerFn(GetPostHandler)
   return useQuery({
     queryKey: ['posts', postId],
-    queryFn: async () => await post({ data: postId }),
+    queryFn: async () =>
+      await ApiFetch(`http://localhost:3000/api/v1/post/${postId}`, {
+        method: 'GET',
+      }),
     enabled: !!postId,
   })
 }
 
 // HOOK POUR CREE UN POST
 export const useCreatePost = () => {
-  const create = useServerFn(AddPostHanler)
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (data: postType) => await create({ data: data }),
-    onSuccess: () => {
+    mutationFn: async (data: postType) =>
+      await ApiFetch('http://localhost:3000/api/v1/post', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: postsListKey })
-      toast.success('Post ajouter')
+      toast.success(data.message)
     },
     onError(error) {
       toast.error(error.message)
@@ -53,16 +51,18 @@ export const useEditPost = (
   postId: string | undefined,
   onSuccess: () => void,
 ) => {
-  const create = useServerFn(UpdatePostHandler)
   const queryClient = useQueryClient()
   return useMutation({
     mutationKey: ['edit-post', postId],
     mutationFn: async (data: { post: postType; postId: string }) =>
-      await create({ data }),
-    onSuccess: () => {
+      await ApiFetch(`http://localhost:3000/api/v1/post/${data.postId}`, {
+        method: 'PUT',
+        body: JSON.stringify(data.post),
+      }),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: postsListKey })
       onSuccess?.()
-      toast.success('post modifier')
+      toast.success(data.message)
     },
     onError(error) {
       toast.error(error.message)
@@ -72,13 +72,15 @@ export const useEditPost = (
 
 // HOOK POR SUPPRIMEE UN POST
 export const useDeletePost = () => {
-  const create = useServerFn(DeletePostHandler)
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (postId: string) => await create({ data: postId }),
+    mutationFn: async (postId: string) =>
+      await ApiFetch(`http://localhost:3000/api/v1/post/${postId}`, {
+        method: 'DELETE',
+      }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: postsListKey })
-      toast.warning('post supprimer' + data.message)
+      toast.warning(data.message)
     },
     onError(error) {
       toast.error(error.message)

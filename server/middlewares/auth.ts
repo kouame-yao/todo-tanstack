@@ -1,31 +1,22 @@
 import { createMiddleware } from '@tanstack/react-start'
-import { useAppSession } from '../utils/sessions'
-import { redirect } from '@tanstack/react-router'
 import userService from '../services/user-service'
 import type { userType } from '../models/user-model'
+import { refreshTokenFn } from '../lib/refreshToken'
 
 export const authentificationMiddleware = createMiddleware({
   type: 'function',
-}).server(async ({ next }) => {
-  const sessions = await useAppSession()
-  if (
-    sessions.data.userId === undefined ||
-    sessions.data.userId === null ||
-    !sessions.id
-  ) {
-    await sessions.clear()
-    throw redirect({ to: '/' })
-  }
-  const user = (await userService.getUser(sessions.data.userId)) as userType
-  return next({
-    context: {
-      userId: sessions.data.userId,
-      email: sessions.data.userId,
-      sessionsId: sessions.id,
-      role: user.role,
-    },
-  })
 })
+  .middleware([refreshTokenFn])
+  .server(async ({ next, context }) => {
+    const user = (await userService.getUser(context.userId)) as userType
+    return next({
+      context: {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      },
+    })
+  })
 export const roles = {
   USER: 'USER',
   ADMIN: 'ADMIN',

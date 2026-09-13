@@ -1,4 +1,4 @@
-import { usePosts } from '#/api/hooks/post-hook'
+import { usePosts } from '#/hooks/post-hook'
 import { toast } from 'sonner'
 import type { postType } from '../../../server/models/post-model'
 import TableRowBody from './TableRowBody'

@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-router'
 import { getUserCurrent } from '../../server/routes/user-route'
 
-import { useLogout, useUpdateRole } from '#/api/hooks/user-hook'
+import { useLogout, useUpdateRole } from '#/hooks/user-hook'
 import { AuthProvider, useAuth } from '#/context/auth'
 import { Suspense } from 'react'
 import Loading from '#/components/ui/Loading'

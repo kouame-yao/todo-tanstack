@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type ChangeEvent } from 'react'
 import { useNavigate, useParams } from '@tanstack/react-router'
 
-import { useEditPost, usePost } from '#/api/hooks/post-hook'
+import { useEditPost, usePost } from '#/hooks/post-hook'
 import type { postType } from '../../../server/models/post-model'
 
 export default function DialogModal() {
